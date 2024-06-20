@@ -50,3 +50,41 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+Objects
+
+# Keil project files
+*.uvprojx
+*.uvproj
+*.uvoptx
+*.uvopt
+*.uv2
+
+# Keil generated files
+*.axf
+*.bin
+*.hex
+*.out
+*.lnp
+*.d
+*.lst
+*.sct
+*.map
+*.log
+*.dep
+*.trc
+
+# Keil backup files
+*.bak
+*.bbl
+*.d
+*.o
+
+# Keil user settings files
+*.uvmpw
+*.uvoptbak
+*.uvguix.*
+
+driverlib/
+inc/
+third_party/
+utils/
