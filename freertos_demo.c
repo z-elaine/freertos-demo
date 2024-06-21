@@ -10,9 +10,13 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
+
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
+#include "blinky.h"
 
+#define ledSTACK_SIZE         configMINIMAL_STACK_SIZE
 
 
 //*****************************************************************************
@@ -27,6 +31,7 @@ __error__(char *pcFilename, uint32_t ui32Line)
 }
 
 #endif
+
 
 //*****************************************************************************
 //
@@ -87,7 +92,7 @@ ConfigureUART(void)
 int
 main(void)
 {
-	static unsigned long ulFlags;
+	// static unsigned long ulFlags;
 	
     // Set the clocking to run at 50 MHz from the PLL.
     ROM_SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ |
@@ -98,42 +103,19 @@ main(void)
 
     // Print demo introduction.
     UARTprintf("\n\nWelcome to the EK-TM4C123GXL FreeRTOS Demo!\n");
+	setupHardware();
 	
-    // Enable the GPIO port that is used for the on-board LED.
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	xTaskCreate( vRedLEDBlinkTask, (signed portCHAR *)"BLUE", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
+	xTaskCreate( vBlueLEDBlinkTask, (signed portCHAR *)"BLUE", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
+	xTaskCreate( vGreenLEDBlinkTask, (signed portCHAR *)"BLUE", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
 
-    // Enable the GPIO pins for the LED .
-    ROM_GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2 |  GPIO_PIN_3);
 	
-    while(1)
-    {
-		ulFlags ^= 1;
+	//
+    // Start the scheduler.  This should not return.
+    //
+    vTaskStartScheduler();
 		
-		if(ulFlags){
-			// Turn on the BLUE LED.
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
-
-			// Delay for a bit.
-			SysCtlDelay(SysCtlClockGet() / 10 / 3);
-
-			// Turn off the BLUE LED.
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
-
-			// Delay for a bit.
-			SysCtlDelay(SysCtlClockGet() / 10 / 3);
-		}else{
-			// Turn on the BLUE LED.
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3);
-
-			// Delay for a bit.
-			SysCtlDelay(SysCtlClockGet() / 10 / 3);
-
-			// Turn off the BLUE LED.
-			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
-
-			// Delay for a bit.
-			SysCtlDelay(SysCtlClockGet() / 10 / 3);
-		}
+	while(1)
+    {
     }
-
 }
