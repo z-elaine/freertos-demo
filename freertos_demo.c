@@ -87,20 +87,53 @@ ConfigureUART(void)
 int
 main(void)
 {
-    //
+	static unsigned long ulFlags;
+	
     // Set the clocking to run at 50 MHz from the PLL.
-    //
     ROM_SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ |
                        SYSCTL_OSC_MAIN);
 
-    //
     // Initialize the UART and configure it for 115,200, 8-N-1 operation.
-    //
     ConfigureUART();
 
-    //
     // Print demo introduction.
-    //
     UARTprintf("\n\nWelcome to the EK-TM4C123GXL FreeRTOS Demo!\n");
+	
+    // Enable the GPIO port that is used for the on-board LED.
+    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+
+    // Enable the GPIO pins for the LED .
+    ROM_GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_2 |  GPIO_PIN_3);
+	
+    while(1)
+    {
+		ulFlags ^= 1;
+		
+		if(ulFlags){
+			// Turn on the BLUE LED.
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
+
+			// Delay for a bit.
+			SysCtlDelay(SysCtlClockGet() / 10 / 3);
+
+			// Turn off the BLUE LED.
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
+
+			// Delay for a bit.
+			SysCtlDelay(SysCtlClockGet() / 10 / 3);
+		}else{
+			// Turn on the BLUE LED.
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, GPIO_PIN_3);
+
+			// Delay for a bit.
+			SysCtlDelay(SysCtlClockGet() / 10 / 3);
+
+			// Turn off the BLUE LED.
+			GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
+
+			// Delay for a bit.
+			SysCtlDelay(SysCtlClockGet() / 10 / 3);
+		}
+    }
 
 }
