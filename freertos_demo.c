@@ -103,16 +103,17 @@ main(void)
 
     // Print demo introduction.
     UARTprintf("\n\nWelcome to the EK-TM4C123GXL FreeRTOS Demo!\n");
-	setupHardware();
 	
-	xTaskCreate( vRedLEDBlinkTask, (signed portCHAR *)"BLUE", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
-	xTaskCreate( vBlueLEDBlinkTask, (signed portCHAR *)"BLUE", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
-	xTaskCreate( vGreenLEDBlinkTask, (signed portCHAR *)"BLUE", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
+	// Create the LED task.
+    if(LEDTaskInit() != 0)
+    {
 
+        while(1)
+        {
+        }
+    }
 	
-	//
     // Start the scheduler.  This should not return.
-    //
     vTaskStartScheduler();
 		
 	while(1)
