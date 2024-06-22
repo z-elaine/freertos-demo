@@ -15,9 +15,13 @@
 #include "task.h"
 #include "queue.h"
 #include "blinky.h"
+#include "semphr.h"
+#include "switch.h"
 
 #define ledSTACK_SIZE         configMINIMAL_STACK_SIZE
 
+// The mutex that protects concurrent access of UART from multiple tasks.
+xSemaphoreHandle g_pUARTSemaphore;
 
 //*****************************************************************************
 //
@@ -104,6 +108,9 @@ main(void)
     // Print demo introduction.
     UARTprintf("\n\nWelcome to the EK-TM4C123GXL FreeRTOS Demo!\n");
 	
+	// Create a mutex to guard the UART.
+    g_pUARTSemaphore = xSemaphoreCreateMutex();
+	
 	// Create the LED task.
     if(LEDTaskInit() != 0)
     {
@@ -113,6 +120,14 @@ main(void)
         }
     }
 	
+	// Create the switch task.
+    if(SwitchTaskInit() != 0)
+    {
+
+        while(1)
+        {
+        }
+    }
     // Start the scheduler.  This should not return.
     vTaskStartScheduler();
 		
